@@ -7,13 +7,16 @@ import 'package:uuid/uuid.dart';
 class TodoController extends GetxController {
   TextEditingController title = TextEditingController();
   TextEditingController updatedTitle = TextEditingController();
+  TextEditingController content = TextEditingController();
+  TextEditingController updatedContent = TextEditingController();
 
   final uId = const Uuid();
   final db = FirebaseFirestore.instance;
 
   RxList<TodoModel> todoList = RxList<TodoModel>();
 
-  void OnInit() {
+  @override
+  void onInit() {
     super.onInit();
     getTodo();
   }
@@ -23,9 +26,11 @@ class TodoController extends GetxController {
     var newTodo = TodoModel(
       id: id,
       title: title.text,
+      content: content.text,
     );
     await db.collection("todo").doc(id).set(newTodo.toJson());
     title.clear();
+    content.clear();
     getTodo();
     print("Todo added to Database");
   }
@@ -51,7 +56,10 @@ class TodoController extends GetxController {
   }
 
   Future<void> updateTodo(TodoModel todo) async {
-    var updatedTodo = TodoModel(id: todo.id, title: updatedTitle.text);
+    var updatedTodo = TodoModel(
+        id: todo.id,
+        title: updatedTitle.text,
+        content: updatedContent.text);
     await db.collection("todo").doc(todo.id).set(updatedTodo.toJson());
     getTodo();
     Get.back();
